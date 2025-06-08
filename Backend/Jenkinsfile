@@ -2,13 +2,19 @@ pipeline {
     agent any
 
     tools {
-        nodejs "Node"   // This must match your Jenkins global config name
+        nodejs "Node"  // This name must match Jenkins NodeJS tool name
+    }
+
+    environment {
+        // You can add ENV variables here or use a .env file
+        NODE_ENV = 'production'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/GourishSavant/RProject.git'
+                git branch: 'main', url: 'https://github.com/GourishSavant/R_project.git'
             }
         }
 
@@ -20,7 +26,13 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'npm test || echo "Tests skipped"'
+                script {
+                    try {
+                        sh 'npm test'
+                    } catch (err) {
+                        echo "Tests failed or skipped: ${err}"
+                    }
+                }
             }
         }
 
@@ -30,12 +42,28 @@ pipeline {
             }
         }
 
-        stage('Deploy (Optional)') {
+        stage('Deploy with PM2') {
             steps {
-                sh 'pm2 restart server.js || pm2 start server.js --name node-app'
+                script {
+                    // Stop existing app if running
+                    sh 'pm2 delete Backend || echo "No existing PM2 app to delete"'
+
+                    // Start using pm2 config
+                    sh 'pm2 start pm2.config.json'
+
+                    // Save PM2 process list and configure startup
+                    sh 'pm2 save'
+                }
             }
         }
     }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
 }
-
-

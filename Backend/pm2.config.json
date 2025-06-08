@@ -2,7 +2,12 @@
   "apps": [
     {
       "name": "Backend",
-      "script": "./app.js"
+      "script": "./app.js",
+      "watch": true,
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 3000
+      }
     }
   ]
 }

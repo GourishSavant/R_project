@@ -4,8 +4,11 @@ import employeeRoutes from './routes/EmployeeRoute.js';
 import employeeLogin from './routes/EmployeeLogin.js';
 import ProductRoute from './routes/ProductRoute.js';
 import cors from 'cors';
+import dotenv from 'dotenv';
 const app = express();
-const PORT = 3000;
+
+dotenv.config();
+const PORT = process.env.PORT || 3000;
 
 app.use(cors({
   origin: 'http://localhost:5173', 
