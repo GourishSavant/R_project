@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs "Node" // This must match your NodeJS tool name in Jenkins
+        nodejs "Node" 
     }
 
     environment {
-        GITHUB_PAT = credentials('github-pat') // Add this credential in Jenkins
+        GITHUB_PAT = credentials('github-pat-jenkins') // Add this credential in Jenkins
         NODE_ENV = 'production'
     }
 
