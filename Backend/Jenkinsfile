@@ -1,13 +1,72 @@
+// pipeline {
+//     agent any
+
+//     tools {
+//         nodejs "Node" 
+//     }
+
+//     environment {
+//         GITHUB_PAT = credentials('my-github-token') // Add this credential in Jenkins
+//         NODE_ENV = 'production'
+//     }
+
+//     stages {
+//         stage('Clone Repository') {
+//             steps {
+//                 git branch: 'main',
+//                     url: "https://${GITHUB_PAT}@github.com/GourishSavant/R_project.git"
+//             }
+//         }
+
+//         stage('Install Dependencies') {
+//             steps {
+//                 dir('Backend') {
+//                 bat 'npm install'
+//                 }
+//             }
+//         }
+
+//         stage('Install PM2') {
+//             steps {
+//                 bat 'npm install pm2 -g'
+//             }
+//         }
+
+    
+//         stage('Deploy with PM2') {
+//             steps {
+//                 script {
+//                     bat '''
+//                     cd Backend
+//                     pm2 delete Backend || echo "No existing PM2 app"
+//                     pm2 start app.js --name Backend
+//                     pm2 save
+//                     '''
+//                 }
+//             }
+//         }
+//     }
+
+//     post {
+//         success {
+//             echo '✅ Deployment successful!'
+//         }
+//         failure {
+//             echo '❌ Deployment failed!'
+//         }
+//     }
+// }
 pipeline {
     agent any
 
     tools {
-        nodejs "Node" 
+        nodejs "Node"
     }
 
     environment {
-        GITHUB_PAT = credentials('my-github-token') // Add this credential in Jenkins
+        GITHUB_PAT = credentials('github-pat')
         NODE_ENV = 'production'
+        PM2_HOME = "${env.WORKSPACE}\\.pm2"
     }
 
     stages {
@@ -21,7 +80,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('Backend') {
-                bat 'npm install'
+                    bat 'npm install'
                 }
             }
         }
@@ -32,29 +91,13 @@ pipeline {
             }
         }
 
-        // stage('Deploy with PM2') {
-        //     steps {
-        //         script {
-        //             // Optional cleanup
-        //             bat 'pm2 delete Backend || echo "No existing PM2 app"'
-
-        //             // Start or restart using pm2 config
-        //             bat 'pm2 startOrRestart pm2.config.json'
-
-        //             // Save PM2 process list and configure startup
-        //             bat 'pm2 save'
-        //         }
-        //     }
-        // }
         stage('Deploy with PM2') {
             steps {
-                script {
-                    bat '''
-                    cd Backend
-                    pm2 delete Backend || echo "No existing PM2 app"
-                    pm2 start app.js --name Backend
-                    pm2 save
-                    '''
+                dir('Backend') {
+                    script {
+                        bat 'pm2 delete Backend || exit 0'
+                        bat 'pm2 start index.js --name Backend'
+                    }
                 }
             }
         }
@@ -62,10 +105,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Deployment successful!'
+            echo "✅ Deployment successful!"
         }
         failure {
-            echo '❌ Deployment failed!'
+            echo "❌ Deployment failed!"
         }
     }
 }
