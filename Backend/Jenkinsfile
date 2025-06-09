@@ -32,17 +32,29 @@ pipeline {
             }
         }
 
+        // stage('Deploy with PM2') {
+        //     steps {
+        //         script {
+        //             // Optional cleanup
+        //             bat 'pm2 delete Backend || echo "No existing PM2 app"'
+
+        //             // Start or restart using pm2 config
+        //             bat 'pm2 startOrRestart pm2.config.json'
+
+        //             // Save PM2 process list and configure startup
+        //             bat 'pm2 save'
+        //         }
+        //     }
+        // }
         stage('Deploy with PM2') {
             steps {
                 script {
-                    // Optional cleanup
-                    bat 'pm2 delete Backend || echo "No existing PM2 app"'
-
-                    // Start or restart using pm2 config
-                    bat 'pm2 startOrRestart pm2.config.json'
-
-                    // Save PM2 process list and configure startup
-                    bat 'pm2 save'
+                    bat '''
+                    cd Backend
+                    pm2 delete Backend || echo "No existing PM2 app"
+                    pm2 start app.js --name Backend
+                    pm2 save
+                    '''
                 }
             }
         }
