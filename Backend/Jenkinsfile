@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        GITHUB_PAT = credentials('github-pat-jenkins') // Add this credential in Jenkins
+        GITHUB_PAT = credentials('my-github-token') // Add this credential in Jenkins
         NODE_ENV = 'production'
     }
 
