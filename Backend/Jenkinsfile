@@ -96,7 +96,7 @@ pipeline {
                 dir('Backend') {
                     script {
                         bat 'pm2 delete Backend || exit 0'
-                        bat 'pm2 start index.js --name Backend'
+                        bat 'pm2 start app.js --name Backend'
                     }
                 }
             }
